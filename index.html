@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cuaderno del profe</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#c8102e">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: a working teacher's tool, calm and quick, nothing decorative in the way.
+   IDEA: the paper "cuaderno del profesor": coloured covers per group, ruled pages, a red margin line.
+   PICTURE: the group covers on the home page; inside, the list / attendance / grade grid itself.
+   COLOUR and TYPE: white page, ink, one cover colour per group as the accent; Figtree throughout.
+   LAYOUT: phone first: header band in the group colour, sticky tabs, full-width lists and a scrollable grid. */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#101216);--ink:light-dark(#15171c,#eceef2);--mut:light-dark(#5d6470,#9aa1ad);--line:light-dark(#e3e5ea,#272b33);--soft:light-dark(#f4f5f7,#181b21);--rule:light-dark(#dfe7f3,#1c2230);--mar:light-dark(#f0a3ad,#6b2a33);--bad:light-dark(#c8102e,#ff6b7a);--ok:light-dark(#11734b,#5fd39b);--amb:light-dark(#a86400,#f4b443);--blu:light-dark(#1f5fd6,#7aa7ff);--c:#15171c}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Figtree,system-ui,sans-serif;overflow-x:clip}
+a{color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--blu);outline-offset:2px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px max(5vw,16px);border-bottom:1px solid var(--line)}
+.brand{font-weight:800;text-decoration:none;font-size:17px}
+#st{font-size:13px;color:var(--mut);white-space:nowrap}
+#st.warn{color:var(--amb)}#st.err{color:var(--bad)}
+.band{padding:clamp(20px,4vw,40px) max(5vw,16px);max-width:1240px;margin:0 auto}
+h1{font-size:clamp(28px,6vw,44px);line-height:1.05;margin:0;font-weight:800;text-wrap:balance}
+h2{font-size:20px;margin:0 0 8px}
+.sub{color:var(--mut);margin:8px 0 0}
+.hero{border-left:3px solid var(--mar);max-width:none;padding-left:max(5vw,20px)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));gap:14px}
+.card{position:relative;display:flex;flex-direction:column;gap:4px;min-height:150px;padding:18px 18px 16px 30px;border-radius:6px 14px 14px 6px;background:var(--c);color:#fff;text-decoration:none;box-shadow:0 1px 0 rgba(0,0,0,.08),0 8px 18px -10px var(--c);transition:transform .15s}
+.card::before{content:"";position:absolute;left:10px;top:0;bottom:0;width:6px;background:rgba(0,0,0,.18);border-radius:2px}
+.card::after{content:"";position:absolute;right:16px;top:16px;width:46px;height:30px;border-radius:4px;background:rgba(255,255,255,.88)}
+.card small{font-size:13px;opacity:.9;font-weight:600}
+.card b{font-size:20px;line-height:1.15;margin-bottom:auto;padding-right:58px}
+.card .meta{font-size:13px;opacity:.92}
+.card:hover{transform:translateY(-2px)}
+.card.add{background:transparent;color:var(--mut);border:2px dashed var(--line);box-shadow:none;align-items:center;justify-content:center;font-weight:700;padding:18px}
+.card.add::before,.card.add::after{display:none}
+@media(prefers-reduced-motion:reduce){.card{transition:none}.card:hover{transform:none}}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn,.pri,.ghost{min-height:44px;padding:0 16px;border-radius:10px;border:1px solid var(--line);background:var(--bg);font-weight:600}
+.pri{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.ghost{border-color:transparent;background:var(--soft)}
+.sm{min-height:38px;padding:0 12px;font-size:14px}
+.danger{color:var(--bad)}
+.gh{background:var(--c);color:#fff;position:sticky;top:0;z-index:5}
+.ghin{display:flex;align-items:center;gap:12px;padding:14px max(5vw,16px) 10px;max-width:1240px;margin:0 auto}
+.ghin>div{flex:1}
+.ghin small{font-size:13px;font-weight:600;opacity:.9}
+.ghin h1{font-size:clamp(22px,5vw,32px)}
+.back,.ico{display:grid;place-items:center;min-width:44px;height:44px;border-radius:10px;border:0;background:rgba(255,255,255,.16);color:inherit;font-size:24px;text-decoration:none;padding:0 10px}
+.ico.t{font-size:14px;font-weight:600}
+.tabs{display:flex;gap:4px;padding:0 max(5vw,16px);max-width:1240px;margin:0 auto;overflow-x:auto}
+.tabs button{border:0;background:none;color:#fff;opacity:.8;padding:10px 14px 12px;font-weight:600;border-bottom:3px solid transparent;white-space:nowrap;min-height:44px}
+.tabs button.on{opacity:1;border-color:#fff}
+.bar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin:0 0 14px;color:var(--mut);font-size:14px}
+.list,.att{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.list li,.att li{border-bottom:1px solid var(--line)}
+.stu{display:flex;align-items:center;gap:10px;width:100%;min-height:52px;padding:8px 4px;border:0;background:none;text-align:left}
+.stu:hover{background:var(--soft)}
+.num{width:26px;color:var(--mut);font-size:13px;text-align:right;font-variant-numeric:tabular-nums}
+.nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chips{display:flex;gap:4px}
+.chip{font-style:normal;font-size:12px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--soft);white-space:nowrap}
+.chip.f{color:var(--bad)}.chip.r{color:var(--amb)}.chip.p{color:var(--ok)}.chip.n{color:var(--bad)}
+.avg{width:48px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.lo{color:var(--bad)}
+.addbox{margin-top:20px;border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+.addbox summary{font-weight:700;cursor:pointer;min-height:32px}
+textarea,input[type=text],input[type=number],input[type=date],select{width:100%;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+textarea{resize:vertical}
+label.f{display:block;font-size:14px;font-weight:600;margin:12px 0 6px}
+.datebar{display:flex;gap:8px;align-items:center;margin-bottom:14px}
+.datebar .ico{background:var(--soft);color:var(--ink)}
+.datebar label{flex:1}
+.dl{display:block;font-weight:700;font-size:18px;margin-bottom:4px}
+.att li{display:flex;align-items:center;gap:10px;min-height:56px;padding:6px 2px}
+.seg{display:flex;gap:4px}
+.seg button{width:44px;height:44px;border-radius:10px;border:1px solid var(--line);background:var(--bg);font-weight:800;color:var(--mut)}
+.seg .kP.on{background:var(--ok);border-color:var(--ok);color:var(--bg)}
+.seg .kF.on{background:var(--bad);border-color:var(--bad);color:var(--bg)}
+.seg .kR.on{background:var(--amb);border-color:var(--amb);color:var(--bg)}
+.seg .kJ.on{background:var(--blu);border-color:var(--blu);color:var(--bg)}
+.note{font-size:13px;color:var(--mut);margin-top:14px}
+.segt{display:inline-flex;background:var(--soft);border-radius:12px;padding:4px;gap:2px}
+.segt button{border:0;background:none;min-height:38px;padding:0 14px;border-radius:9px;font-weight:600;color:var(--mut)}
+.segt button.on{background:var(--bg);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.tw{overflow:auto;border:1px solid var(--line);border-radius:12px;max-height:72vh}
+table.g{border-collapse:separate;border-spacing:0;font-size:14px}
+.g th,.g td{border-bottom:1px solid var(--line);border-right:1px solid var(--line);padding:0;white-space:nowrap}
+.g thead th{position:sticky;top:0;background:var(--soft);z-index:2;font-weight:600;vertical-align:bottom}
+.g .sk{position:sticky;left:0;background:var(--bg);z-index:1;padding:8px 10px;max-width:44vw;overflow:hidden;text-overflow:ellipsis;text-align:left}
+.g thead .sk{z-index:3;background:var(--soft)}
+.g th button{display:flex;flex-direction:column;align-items:center;border:0;background:none;padding:8px 10px;min-width:100px;max-width:150px;font-weight:600}
+.g th button small{max-width:130px;overflow:hidden;text-overflow:ellipsis}
+.g th button span{max-width:130px;overflow:hidden;text-overflow:ellipsis}
+.g th small,.g th .s{display:block;font-size:12px;color:var(--mut);font-weight:500}
+.g .cx{padding:8px 10px;text-align:right;font-variant-numeric:tabular-nums;background:var(--soft)}
+.g thead .cx{text-align:right}
+.g .fin{font-weight:800}
+.mk{width:100%;min-width:64px;height:42px;border:0;background:transparent;text-align:center;font-size:16px;font-variant-numeric:tabular-nums}
+.mk:focus{outline:2px solid var(--c);outline-offset:-2px;background:var(--soft)}
+.mk.e{background:light-dark(#fde7ea,#3a1a1f)}
+.mk.lo{color:var(--bad);font-weight:700}
+.empty{padding:28px 20px;border:2px dashed var(--line);border-radius:14px;text-align:center;color:var(--mut)}
+.empty b{display:block;color:var(--ink);font-size:18px;margin-bottom:6px}
+.entry{border-bottom:1px solid var(--line)}
+.entry button{display:block;width:100%;text-align:left;border:0;background:none;padding:12px 4px}
+.entry time{font-weight:700;font-size:14px}
+.entry p{margin:4px 0 0;white-space:pre-wrap;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;color:var(--mut)}
+.foot{border-top:1px solid var(--line)}
+.foot p{color:var(--mut);margin:0 0 12px;max-width:62ch}
+#sh{position:fixed;inset:0;background:rgba(10,12,16,.5);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+#sh[hidden]{display:none}
+.sbox{position:relative;background:var(--bg);width:min(620px,100%);max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:22px 20px calc(24px + env(safe-area-inset-bottom))}
+@media(min-width:700px){#sh{align-items:center}.sbox{border-radius:18px}}
+.x{position:absolute;right:12px;top:12px;width:44px;height:44px;border:0;background:var(--soft);border-radius:50%;font-size:22px}
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;margin:14px 0}
+.stats div{background:var(--soft);border-radius:10px;padding:8px 10px}
+.stats b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
+.stats span{font-size:12px;color:var(--mut)}
+.an{list-style:none;padding:0;margin:10px 0 0}
+.an li{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line)}
+.an .s{font-weight:800;width:18px}
+.an .tx{flex:1}.an small{display:block;color:var(--mut);font-size:12px}
+.an button{border:0;background:none;color:var(--mut);min-width:36px;min-height:36px}
+.sw{display:flex;flex-wrap:wrap;gap:8px}
+.sw button{width:40px;height:40px;border-radius:50%;border:3px solid transparent}
+.sw button.on{border-color:var(--ink)}
+.cat{display:grid;grid-template-columns:1fr 86px 44px;gap:8px;margin-bottom:8px;align-items:center}
+.cat button{height:44px;border:0;background:var(--soft);border-radius:10px}
+.cat button:disabled{opacity:.35}
+.wl{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font-size:14px;color:var(--mut);margin:0 0 14px;padding:10px 14px;background:var(--soft);border-radius:12px}.wl b{color:var(--ink)}.wl .bad{color:var(--amb);font-weight:600}.wl .good{color:var(--ok);font-weight:600}
+.chipsel{display:flex;flex-wrap:wrap;gap:6px}.chipsel button{min-height:40px;padding:0 14px;border-radius:20px;border:1px solid var(--line);background:var(--bg);font-weight:600}.chipsel button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.pw{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 14px}.pw input{width:90px}
+.sumrow{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px}.sumrow div{background:var(--soft);border-radius:12px;padding:10px 14px;min-width:120px}.sumrow b{display:block;font-size:22px;font-variant-numeric:tabular-nums}.sumrow span{font-size:13px;color:var(--mut)}
+.warnline{font-size:14px;color:var(--amb);margin:6px 0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;z-index:30;opacity:0;pointer-events:none;transition:opacity .2s}
+#toast.on{opacity:1}
+.loading{padding:60px 20px;text-align:center;color:var(--mut)}
+@media(max-width:600px){.chips .chip.p,.chips .chip.n{display:none}.seg button{width:40px;height:44px}.card{min-height:128px}}
+</style>
+</head>
+<body>
+<header class="top"><a href="#" class="brand">Cuaderno</a><span class="row" style="gap:10px"><span id="st"></span><button class="btn sm" id="syncB">Copias</button></span></header>
+<main id="app"><p class="loading">Abriendo tu cuaderno…</p></main>
+<div id="sh" hidden></div>
+<div id="toast" role="status"></div>
+<script>
+{
+const $=s=>document.querySelector(s);
+const app=$('#app');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nid=()=>Math.random().toString(36).slice(2,8)+Date.now().toString(36).slice(-4);
+const now=()=>Date.now();
+const iso=d=>{d=new Date(d);d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)};
+const today=()=>iso(new Date());
+const fd=(d,o={day:'numeric',month:'short'})=>d?new Date(d+'T12:00').toLocaleDateString('es-ES',o):'';
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const fmt=n=>n==null?'—':n.toFixed(2).replace(/\.?0+$/,'').replace('.',',');
+const num=v=>{v=String(v??'').trim().replace(',','.');return v===''?null:Number(v)};
+const ago=t=>{if(!t)return'nunca';const m=Math.round((now()-t)/60000);if(m<1)return'ahora mismo';if(m<60)return`hace ${m} min`;const h=Math.round(m/60);if(h<24)return`hace ${h} h`;const d=Math.round(h/24);return d===1?'ayer':`hace ${d} días`};
+const COLORS=['#c8102e','#0a8f8f','#1f5fd6','#d08a00','#b5541c','#0f8b6e','#d9467a','#6b4fbb','#3d4b5c','#8a6d1f'];
+const TYPES=['Examen','Trabajo','Proyecto','Cuaderno','Exposición','Otro'];
+const DEF=[['hf2b','2º Bachillerato','Historia de la Filosofía'],['psi2b','2º Bachillerato','Psicología'],['fil4','4º ESO','Filosofía'],['ae4','4º ESO','Atención educativa'],['cc3','3º ESO','Cultura clásica'],['ae3','3º ESO','Atención educativa'],['ae1a','1º ESO','Atención educativa · Grupo A'],['ae1b','1º ESO','Atención educativa · Grupo B']];
+const newG=()=>({students:{},acts:{},parts:{},marks:{},pw:{}});
+function defaults(){const D={v:3,groups:{},g:{},meta:{}};DEF.forEach(([id,c,n],i)=>{D.groups[id]={course:c,name:n,color:COLORS[i],o:i,u:0};D.g[id]=newG()});return D}
+
+/* ---------- guardado local ---------- */
+const LS='cuaderno_offline_v3';
+let D;
+function status(t,c){const e=$('#st');e.textContent=t;e.className=c||''}
+function load(){try{const x=JSON.parse(localStorage.getItem(LS));if(x&&x.v===3)return x}catch(e){}return defaults()}
+function persist(edit=true){if(edit)D.meta.lastEdit=now();try{localStorage.setItem(LS,JSON.stringify(D));status('Guardado ✓')}catch(e){status('No se pudo guardar','err')}}
+
+/* ---------- acceso a datos ---------- */
+const live=o=>Object.keys(o||{}).filter(k=>!o[k].del).map(k=>Object.assign({id:k},o[k]));
+const groups=()=>live(D.groups).sort((a,b)=>a.o-b.o);
+const stus=g=>live(g.students).sort((a,b)=>a.o-b.o||a.n.localeCompare(b.n,'es'));
+const bydate=(a,b)=>(a.date||'9').localeCompare(b.date||'9')||(a.c||0)-(b.c||0);
+const actsOf=(g,t)=>live(g.acts).filter(a=>a.trim==t).sort(bydate);
+const partsOf=(g,t)=>live(g.parts).filter(a=>a.trim==t).sort(bydate);
+const mk=(g,aid,sid)=>{const x=g.marks[aid]&&g.marks[aid][sid];return x&&x.v!=null?x.v:null};
+const setMk=(g,aid,sid,v)=>{(g.marks[aid]||(g.marks[aid]={}))[sid]={v,u:now()}};
+const pwv=(g,t)=>g.pw[t]&&g.pw[t].v!=null?g.pw[t].v:null;
+const setPw=(g,t,v)=>{g.pw[t]={v,u:now()}};
+const touch=(o,p)=>Object.assign(o,p,{u:now()});
+
+/* ---------- cálculos ---------- */
+const R={g:null,tab:'notas',trim:1};
+const G=()=>D.g[R.g];
+const M=()=>Object.assign({id:R.g},D.groups[R.g]);
+const nv=(g,a,sid)=>{const v=mk(g,a.id,sid);return v==null?null:v/a.max*10};
+function partAvg(g,sid,t){let s=0,n=0;for(const a of partsOf(g,t)){const v=nv(g,a,sid);if(v!=null){s+=v;n++}}return n?s/n:null}
+function evalG(g,sid,t){let s=0,w=0;for(const a of actsOf(g,t)){const v=nv(g,a,sid),x=+a.w||0;if(v!=null&&x>0){s+=v*x;w+=x}}const pw=+pwv(g,t)||0,pa=partAvg(g,sid,t);if(pa!=null&&pw>0){s+=pa*pw;w+=pw}return w?s/w:null}
+function mediaG(g,sid){const v=[1,2,3].map(t=>evalG(g,sid,t)).filter(x=>x!=null);return v.length?v.reduce((a,b)=>a+b,0)/v.length:null}
+const wsum=(g,t)=>actsOf(g,t).reduce((s,a)=>s+(+a.w||0),0)+(+pwv(g,t)||0);
+const lo=n=>n!=null&&n<5?'lo':'';
+const pc=n=>(n==null||n==='')?'sin peso':fmt(+n)+' %';
+
+/* ---------- fusión de copias ---------- */
+let changes=0;
+const newer=(a,b)=>!a?b:!b?a:((b.u||0)>(a.u||0)?b:a);
+function mergeMap(a,b){a=a||{};b=b||{};const o={};new Set([...Object.keys(a),...Object.keys(b)]).forEach(k=>{const w=newer(a[k],b[k]);if(w===b[k]&&JSON.stringify(a[k])!==JSON.stringify(b[k]))changes++;o[k]=JSON.parse(JSON.stringify(w))});return o}
+function mergeAll(A,B){
+  changes=0;
+  const out={v:3,groups:mergeMap(A.groups,B.groups),g:{},meta:A.meta||{}};
+  new Set([...Object.keys(A.g||{}),...Object.keys(B.g||{})]).forEach(id=>{
+    const a=(A.g||{})[id]||newG(),b=(B.g||{})[id]||newG();
+    const m={students:mergeMap(a.students,b.students),acts:mergeMap(a.acts,b.acts),parts:mergeMap(a.parts,b.parts),pw:mergeMap(a.pw,b.pw),marks:{}};
+    new Set([...Object.keys(a.marks||{}),...Object.keys(b.marks||{})]).forEach(k=>m.marks[k]=mergeMap((a.marks||{})[k],(b.marks||{})[k]));
+    out.g[id]=m});
+  return out;
+}
+/* Copias exportadas desde la versión de Claude */
+function fromOld(x){
+  const out={v:3,groups:{},g:{},meta:{}},cur=groups();
+  x.cfg.groups.forEach((m,i)=>{
+    const match=cur.find(c=>c.course===m.course&&c.name===m.name),id=match?match.id:m.id,o=x.g[m.id]||{},G=newG();
+    out.groups[id]={course:m.course,name:m.name,color:m.color,o:match?match.o:100+i,u:1};
+    (o.students||[]).forEach((s,j)=>G.students[s.id]={n:s.n,obs:s.obs||'',o:j,u:1});
+    (o.acts||[]).forEach(a=>G.acts[a.id]={name:a.name,type:a.type||'Otro',max:a.max||10,trim:a.trim||1,date:a.date||'',w:a.w??null,c:1,u:1});
+    (o.parts||[]).forEach(a=>G.parts[a.id]={name:a.name,max:a.max||10,trim:a.trim||1,date:a.date||'',c:1,u:1});
+    for(const aid in (o.marks||{}))for(const sid in o.marks[aid])(G.marks[aid]||(G.marks[aid]={}))[sid]={v:o.marks[aid][sid],u:1};
+    if(o.pw&&!o.cats)for(const t in o.pw)if(o.pw[t]!=null)G.pw[t]={v:o.pw[t],u:1};
+    out.g[id]=G});
+  return out;
+}
+function importData(txt){
+  let x;try{x=JSON.parse(txt)}catch(e){toast('Ese archivo no es una copia del cuaderno');return false}
+  if(x&&x.v===3&&x.groups&&x.g){}else if(x&&x.cfg&&Array.isArray(x.cfg.groups)&&x.g){x=fromOld(x)}else{toast('Ese archivo no es una copia del cuaderno');return false}
+  D=mergeAll(D,x);persist(false);
+  toast(changes?`Copia cargada: ${changes} ${changes===1?'cambio incorporado':'cambios incorporados'}`:'Ya tenías todo al día');return true;
+}
+
+/* ---------- utilidades UI ---------- */
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),2800)}
+function arm(btn,fn){if(!btn)return;btn.addEventListener('click',()=>{if(btn.dataset.armed){fn()}else{btn.dataset.armed=1;const t=btn.textContent;btn.textContent='¿Seguro? Toca otra vez';setTimeout(()=>{delete btn.dataset.armed;btn.textContent=t},3500)}})}
+function sheet(html){const sh=$('#sh');sh.innerHTML=`<div class="sbox" role="dialog" aria-modal="true"><button class="x" aria-label="Cerrar">×</button>${html}</div>`;sh.hidden=false;sh.querySelector('.x').onclick=closeSheet;sh.onclick=e=>{if(e.target===sh)closeSheet()};return sh.querySelector('.sbox')}
+function closeSheet(){const sh=$('#sh');if(sh.hidden)return;sh.hidden=true;sh.innerHTML='';render()}
+async function copy(text){try{await navigator.clipboard.writeText(text);toast('Copiado: pégalo en Excel o en un documento')}catch(e){toast('No se pudo copiar')}}
+const segT=t=>`<div class="segt">${[1,2,3].map(k=>`<button data-t="${k}" class="${t==k?'on':''}">${k}ª evaluación</button>`).join('')}</div>`;
+function bindSegT(p,fn){p.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{R.trim=+b.dataset.t;fn()})}
+
+/* ---------- vistas ---------- */
+function render(){
+  const h=location.hash.slice(1),id=h.startsWith('grupo-')?h.slice(6):null;
+  R.g=id&&D.groups[id]&&!D.groups[id].del?id:null;
+  if(R.g){if(!D.g[R.g])D.g[R.g]=newG();document.documentElement.style.setProperty('--c',M().color);group()}else home();
+}
+const pending=()=>(D.meta.lastEdit||0)>(D.meta.lastExport||0);
+
+function home(){
+  const gs=groups(),tot=gs.reduce((a,x)=>a+stus(D.g[x.id]||newG()).length,0);
+  app.innerHTML=`<section class="band hero"><h1>Mis grupos</h1><p class="sub">${cap(fd(today(),{weekday:'long',day:'numeric',month:'long'}))} · ${gs.length} grupos · ${tot} alumnos</p></section>
+  ${pending()&&D.meta.lastEdit?`<section class="band" style="padding-bottom:0"><div class="wl"><span>Tienes cambios que aún no has pasado a tu otro aparato.</span><button class="pri sm" id="qs">Guardar copia</button></div></section>`:''}
+  <section class="band"><div class="grid">${gs.map(m=>{const g=D.g[m.id]||newG();return`<a class="card" href="#grupo-${m.id}" style="--c:${m.color}"><small>${esc(m.course)}</small><b>${esc(m.name)}</b><span class="meta">${stus(g).length} alumnos</span><span class="meta">${live(g.acts).length} notas registradas · ${live(g.parts).length} de participación</span></a>`}).join('')}<button class="card add" id="addG">+ Nuevo grupo</button></div></section>
+  <section class="band foot"><h2>Tablet y ordenador</h2><p>El cuaderno funciona sin internet y guarda todo en este aparato. Para tener lo mismo en los dos: al terminar en uno, toca <b>Copias → Guardar copia</b> y guárdala en tu Google Drive; al empezar en el otro, <b>Copias → Cargar copia</b>. Se juntan los cambios de los dos aparatos sin borrar nada.</p><p>Última copia guardada desde este aparato: <b>${ago(D.meta.lastExport)}</b>.</p><div class="row"><button class="btn" id="sy2">Abrir copias</button></div></section>`;
+  $('#addG').onclick=()=>groupSheet(null);
+  $('#sy2').onclick=syncSheet;
+  const q=$('#qs');if(q)q.onclick=saveCopy;
+}
+
+const TABS=[['alumnos','Alumnado'],['notas','Exámenes y trabajos'],['part','Participación y actitud'],['res','Notas finales']];
+function group(){
+  const m=M();
+  app.innerHTML=`<section class="gh"><div class="ghin"><a href="#" class="back" aria-label="Volver a mis grupos">‹</a><div><small>${esc(m.course)}</small><h1>${esc(m.name)}</h1></div><button class="ico t" id="gset">Ajustes</button></div>
+  <nav class="tabs">${TABS.map(([k,l])=>`<button data-tab="${k}" class="${R.tab===k?'on':''}">${l}</button>`).join('')}</nav></section><section class="band" id="pane"></section>`;
+  app.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{R.tab=b.dataset.tab;group();window.scrollTo(0,0)});
+  $('#gset').onclick=()=>groupSheet(m);
+  const g=G(),p=$('#pane');
+  if(R.tab!=='alumnos'&&!stus(g).length){p.innerHTML=`<div class="empty"><b>Todavía no hay alumnado</b>Primero añade la lista en la pestaña Alumnado.</div><p class="row" style="justify-content:center;margin-top:14px"><button class="pri" id="goA">Ir a Alumnado</button></p>`;$('#goA').onclick=()=>{R.tab='alumnos';group()};return}
+  ({alumnos:pAlu,notas:pNotas,part:pPart,res:pRes})[R.tab](p,g);
+}
+
+function pAlu(p,g){
+  const st=stus(g);
+  p.innerHTML=(st.length?`<div class="bar"><span>${st.length} alumnos · toca un nombre para ver su ficha</span><button class="ghost sm" id="az">Ordenar A–Z</button></div>
+  <ol class="list">${st.map((s,i)=>{const f=mediaG(g,s.id);return`<li><button class="stu" data-sid="${s.id}"><span class="num">${i+1}</span><span class="nm">${esc(s.n)}</span><span class="avg ${lo(f)}" title="Media de las evaluaciones">${fmt(f)}</span></button></li>`}).join('')}</ol>`:'')+
+  `<details class="addbox" ${st.length?'':'open'}><summary>Añadir alumnos</summary><p class="note" style="margin-top:4px">Pega la lista, un alumno por línea (copiada de Raíces, de Excel o escrita a mano).</p><textarea id="bulk" rows="7" placeholder="García López, Lucía&#10;Martín Ruiz, Pablo"></textarea><p><button class="pri" id="addS">Añadir a la lista</button></p></details>`;
+  p.querySelectorAll('.stu').forEach(b=>b.onclick=()=>stuSheet(b.dataset.sid));
+  const az=$('#az');if(az)az.onclick=()=>{st.sort((a,b)=>a.n.localeCompare(b.n,'es')).forEach((s,i)=>touch(g.students[s.id],{o:i}));persist();group()};
+  $('#addS').onclick=()=>{const names=$('#bulk').value.split('\n').map(x=>x.replace(/\t/g,' ').trim()).filter(Boolean);if(!names.length)return;const base=st.length?Math.max(...st.map(s=>s.o))+1:0;names.forEach((n,i)=>g.students[nid()]={n,obs:'',o:base+i,u:now()});persist();toast(names.length+' alumnos añadidos');group()};
+}
+
+function wline(g,t){
+  const s=wsum(g,t),parts=actsOf(g,t).map(a=>`${esc(a.name)} <b>${pc(a.w)}</b>`);
+  parts.push(`Participación y actitud <b>${pc(pwv(g,t))}</b>`);
+  return`<div class="wl"><span>Ponderación de la ${t}ª: ${parts.join(' · ')}</span><span class="${s===100?'good':'bad'}">Total ${fmt(s)} %${s===100?' ✓':''}</span><button class="btn sm" id="wedit">Cambiar ponderación</button></div>`;
+}
+function gridHTML(g,cols,extra){
+  const st=stus(g);
+  return`<div class="tw"><table class="g"><thead><tr><th class="sk">Alumno</th>${cols.map(a=>`<th><button data-act="${a.id}" title="Editar"><span>${esc(a.name)}</span>${a.type?`<small>${esc(a.type)} · ${pc(a.w)}</small>`:''}<small>sobre ${fmt(a.max)}${a.date?' · '+fd(a.date):''}</small></button></th>`).join('')}${extra.map(e=>`<th class="cx ${e.cls||''}">${e.h}${e.s?`<span class="s">${e.s}</span>`:''}</th>`).join('')}</tr></thead>
+  <tbody>${st.map((s,i)=>`<tr><td class="sk">${i+1}. ${esc(s.n)}</td>${cols.map(a=>{const v=mk(g,a.id,s.id);return`<td><input class="mk ${v!=null&&v/a.max<.5?'lo':''}" inputmode="decimal" autocomplete="off" aria-label="${esc(s.n)}, ${esc(a.name)}" data-sid="${s.id}" data-act="${a.id}" value="${v==null?'':fmt(v)}"></td>`}).join('')}${extra.map((e,j)=>`<td class="cx ${e.cls||''}" data-x="${j}" data-s="${s.id}"></td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+}
+function bindGrid(p,g,list,extra){
+  const upd=sid=>extra.forEach((e,j)=>{const td=p.querySelector(`[data-x="${j}"][data-s="${sid}"]`);if(!td)return;const v=e.f(sid);td.textContent=fmt(v);td.className=`cx ${e.cls||''} ${lo(v)}`});
+  stus(g).forEach(s=>upd(s.id));
+  p.querySelectorAll('.mk').forEach(inp=>{
+    inp.onchange=()=>{const a=list.find(x=>x.id===inp.dataset.act),sid=inp.dataset.sid,v=num(inp.value);
+      if(v!=null&&(isNaN(v)||v<0||v>a.max)){inp.classList.add('e');toast('La nota debe ir de 0 a '+fmt(a.max));return}
+      inp.classList.remove('e');if(v!==mk(g,a.id,sid)){setMk(g,a.id,sid,v);persist()}
+      inp.classList.toggle('lo',v!=null&&v/a.max<.5);upd(sid)};
+    inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();const all=[...p.querySelectorAll(`.mk[data-act="${inp.dataset.act}"]`)],i=all.indexOf(inp);inp.dispatchEvent(new Event('change'));if(all[i+1]){all[i+1].focus();all[i+1].select()}else inp.blur()}};
+  });
+}
+
+function pNotas(p,g){
+  const t=R.trim,acts=actsOf(g,t);
+  const extra=[{h:'Part. y actitud',s:pc(pwv(g,t)),f:sid=>partAvg(g,sid,t)},{h:'Nota',s:`${t}ª evaluación`,cls:'fin',f:sid=>evalG(g,sid,t)}];
+  p.innerHTML=`<div class="bar">${segT(t)}<button class="pri" id="nA">+ Añadir examen o trabajo</button></div>${wline(g,t)}`+
+   (acts.length?gridHTML(g,acts,extra)+`<p class="note">Toca el título de una columna para cambiar su nombre, su peso o borrarla. Escribe la nota y pulsa Intro para bajar a la siguiente. Si un alumno no tiene nota en algo, eso no cuenta en su media (pon un 0 si quieres que cuente).</p>`
+   :`<div class="empty"><b>Aún no hay notas en la ${t}ª evaluación</b>Añade un examen, un trabajo o cualquier otra tarea y elige cuánto pesa.</div>`);
+  bindSegT(p,()=>pNotas(p,g));
+  $('#nA').onclick=()=>actSheet(null,'act');
+  $('#wedit').onclick=()=>weightSheet(t);
+  p.querySelectorAll('th [data-act]').forEach(b=>b.onclick=()=>actSheet(b.dataset.act,'act'));
+  if(acts.length)bindGrid(p,g,acts,extra);
+}
+
+function pPart(p,g){
+  const t=R.trim,ps=partsOf(g,t);
+  const extra=[{h:'Media',s:'part. y actitud',cls:'fin',f:sid=>partAvg(g,sid,t)}];
+  p.innerHTML=`<div class="bar">${segT(t)}<button class="pri" id="nP">+ Nueva nota de participación o actitud</button></div>
+  <div class="pw"><label for="pwi"><b>Peso en la nota de la ${t}ª evaluación</b></label><input type="text" inputmode="decimal" id="pwi" value="${pwv(g,t)==null?'':fmt(pwv(g,t))}" placeholder="—"> <span>%</span><span class="note" style="margin:0">Total de la ${t}ª: ${fmt(wsum(g,t))} %</span></div>`+
+   (ps.length?gridHTML(g,ps,extra)+`<p class="note">Puedes poner una nota cada día, cada semana o cuando quieras. La media de todas es la nota de participación y actitud de la evaluación.</p>`
+   :`<div class="empty"><b>Sin notas de participación en la ${t}ª evaluación</b>Crea una columna (por ejemplo «Participación semana 1» o «Actitud noviembre») y pon la nota a cada alumno.</div>`);
+  bindSegT(p,()=>pPart(p,g));
+  $('#nP').onclick=()=>actSheet(null,'part');
+  $('#pwi').onchange=e=>{const v=num(e.target.value);if(v!=null&&(isNaN(v)||v<0||v>100)){toast('El peso va de 0 a 100');return}setPw(g,t,v);persist();pPart(p,g)};
+  p.querySelectorAll('th [data-act]').forEach(b=>b.onclick=()=>actSheet(b.dataset.act,'part'));
+  if(ps.length)bindGrid(p,g,ps,extra);
+}
+
+function pRes(p,g){
+  const rows=stus(g).map(s=>({s,e:[1,2,3].map(t=>evalG(g,s.id,t)),m:mediaG(g,s.id)}));
+  const stat=k=>{const v=rows.map(r=>k<3?r.e[k]:r.m).filter(x=>x!=null);return{avg:v.length?v.reduce((a,b)=>a+b,0)/v.length:null,ap:v.filter(x=>x>=5).length,n:v.length}};
+  const sts=[0,1,2,3].map(stat);
+  p.innerHTML=`<div class="sumrow">${sts.map((x,k)=>`<div><span>${k<3?(k+1)+'ª evaluación':'Media de las tres'}</span><b class="${lo(x.avg)}">${fmt(x.avg)}</b><span>${x.n?`${x.ap} de ${x.n} aprobados`:'sin notas aún'}</span></div>`).join('')}</div>
+  <div class="tw"><table class="g"><thead><tr><th class="sk">Alumno</th><th class="cx">1ª ev.</th><th class="cx">2ª ev.</th><th class="cx">3ª ev.</th><th class="cx fin">Media</th></tr></thead><tbody>${rows.map((r,i)=>`<tr><td class="sk">${i+1}. ${esc(r.s.n)}</td>${r.e.map(v=>`<td class="cx ${lo(v)}">${fmt(v)}</td>`).join('')}<td class="cx fin ${lo(r.m)}">${fmt(r.m)}</td></tr>`).join('')}</tbody></table></div>
+  <p class="row" style="margin-top:14px"><button class="btn" id="csv">Copiar tabla</button></p>
+  <p class="note">La nota de cada evaluación combina los exámenes, los trabajos y la participación y actitud según los pesos que has puesto. La media es la de las evaluaciones que ya tienen nota.</p>`;
+  $('#csv').onclick=()=>{const q=s=>'"'+String(s).replace(/"/g,'""')+'"',c=v=>v==null?'':fmt(v);copy(['Alumno;1ª ev.;2ª ev.;3ª ev.;Media',...rows.map(r=>[q(r.s.n),...r.e.map(c),c(r.m)].join(';'))].join('\n'))};
+}
+
+/* ---------- fichas ---------- */
+function stuSheet(sid){
+  const g=G(),s=g.students[sid];if(!s)return;
+  const box=sheet(`<h2>${esc(s.n)}</h2><div class="stats">${[1,2,3].map(t=>{const v=evalG(g,sid,t);return`<div><b class="${lo(v)}">${fmt(v)}</b><span>${t}ª ev.</span></div>`}).join('')}<div><b class="${lo(mediaG(g,sid))}">${fmt(mediaG(g,sid))}</b><span>Media</span></div></div>
+  <label class="f" for="sn">Nombre</label><input type="text" id="sn" value="${esc(s.n)}">
+  <label class="f" for="so">Observaciones</label><textarea id="so" rows="4" placeholder="Adaptaciones, familia, intereses…">${esc(s.obs||'')}</textarea>
+  <p class="row" style="margin-top:20px"><button class="pri" id="sok">Hecho</button><button class="ghost danger" id="sdel">Eliminar alumno</button></p>`);
+  box.querySelector('#sok').onclick=()=>{const n=box.querySelector('#sn').value.trim()||s.n,o=box.querySelector('#so').value;if(n!==s.n||o!==(s.obs||'')){touch(s,{n,obs:o});persist()}closeSheet()};
+  arm(box.querySelector('#sdel'),()=>{touch(s,{del:true});persist();closeSheet()});
+}
+
+function actSheet(id,kind){
+  const g=G(),isP=kind==='part',store=isP?g.parts:g.acts,isNew=!id;
+  const a=isNew?(isP?{name:'Participación '+fd(today()),max:10,trim:R.trim,date:today()}:{name:'',type:'Examen',max:10,trim:R.trim,date:today(),w:null}):store[id];
+  let type=a.type;
+  const box=sheet(`<h2>${isNew?(isP?'Nueva nota de participación o actitud':'Nuevo examen o trabajo'):'Editar'}</h2>
+  ${isP?`<label class="f">Qué valoras</label><div class="chipsel">${['Participación','Actitud','Participación y actitud'].map(x=>`<button data-q="${x}">${x}</button>`).join('')}</div>`:`<label class="f">Tipo</label><div class="chipsel">${TYPES.map(x=>`<button data-ty="${x}" class="${x===type?'on':''}">${x}</button>`).join('')}</div>`}
+  <label class="f" for="an">Nombre</label><input type="text" id="an" value="${esc(a.name)}" placeholder="${isP?'Participación semana 1':'Examen tema 2: Platón'}">
+  <div class="two">${isP?'':`<div><label class="f" for="aw">Peso en la nota (%)</label><input type="text" inputmode="decimal" id="aw" value="${a.w==null?'':fmt(a.w)}" placeholder="Ej.: 40"></div>`}<div><label class="f" for="am">Se califica sobre</label><input type="text" inputmode="decimal" id="am" value="${fmt(a.max)}"></div>
+  <div><label class="f" for="atr">Evaluación</label><select id="atr">${[1,2,3].map(t=>`<option value="${t}" ${a.trim==t?'selected':''}>${t}ª evaluación</option>`).join('')}</select></div><div><label class="f" for="ad">Fecha</label><input type="date" id="ad" value="${a.date||''}"></div></div>
+  ${isP?'':`<p class="note" id="wn"></p>`}
+  <p class="row" style="margin-top:18px"><button class="pri" id="aok">${isNew?'Añadir':'Guardar'}</button>${isNew?'':'<button class="ghost danger" id="adel">Borrar con sus notas</button>'}</p>`);
+  const nm=box.querySelector('#an');
+  box.querySelectorAll('[data-ty]').forEach(b=>b.onclick=()=>{type=b.dataset.ty;box.querySelectorAll('[data-ty]').forEach(x=>x.classList.toggle('on',x===b))});
+  box.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{nm.value=b.dataset.q+' '+fd(box.querySelector('#ad').value||today())});
+  const wn=box.querySelector('#wn');
+  const hint=()=>{if(!wn)return;const t=+box.querySelector('#atr').value,others=wsum(g,t)-(!isNew&&a.trim==t?(+a.w||0):0),w=num(box.querySelector('#aw').value)||0;wn.textContent=`Con este, la ${t}ª evaluación suma ${fmt(others+w)} %. Puedes cambiar los pesos cuando quieras.`};
+  if(wn){hint();box.querySelector('#aw').oninput=hint;box.querySelector('#atr').onchange=hint}
+  if(isNew&&!isP)nm.focus();
+  box.querySelector('#aok').onclick=()=>{
+    const name=nm.value.trim(),max=num(box.querySelector('#am').value);
+    if(!name){toast('Ponle un nombre');return}
+    if(!max||isNaN(max)||max<=0){toast('La nota máxima debe ser mayor que 0');return}
+    let w=null;if(!isP){w=num(box.querySelector('#aw').value);if(w!=null&&(isNaN(w)||w<0||w>100)){toast('El peso va de 0 a 100');return}}
+    const patch={name,max,trim:+box.querySelector('#atr').value,date:box.querySelector('#ad').value};
+    if(!isP){patch.type=type;patch.w=w}
+    if(isNew)store[nid()]=Object.assign(patch,{c:now(),u:now()});else touch(a,patch);
+    R.trim=patch.trim;persist();closeSheet();
+    if(!isP&&w==null)toast('Sin peso no cuenta en la nota: pónselo cuando lo sepas');
+  };
+  arm(box.querySelector('#adel'),()=>{touch(a,{del:true});persist();closeSheet()});
+}
+
+function weightSheet(t){
+  const g=G(),acts=actsOf(g,t);
+  const box=sheet(`<h2>Ponderación de la ${t}ª evaluación</h2><p class="note" style="margin-top:0">Lo ideal es que sume 100 %. Si no, la nota se calcula repartiendo en proporción.</p>
+  ${acts.map(a=>`<div class="cat" style="grid-template-columns:1fr 90px 24px"><span>${esc(a.name)}<small style="display:block;color:var(--mut);font-size:12px">${esc(a.type||'')}</small></span><input type="text" inputmode="decimal" data-w="${a.id}" value="${a.w==null?'':fmt(a.w)}" placeholder="—" aria-label="Peso de ${esc(a.name)}"><span>%</span></div>`).join('')}
+  <div class="cat" style="grid-template-columns:1fr 90px 24px"><span><b>Participación y actitud</b></span><input type="text" inputmode="decimal" id="wp" value="${pwv(g,t)==null?'':fmt(pwv(g,t))}" placeholder="—"><span>%</span></div>
+  <p class="wl" id="ws" style="margin-top:12px"></p><p class="row"><button class="pri" id="wok">Guardar ponderación</button></p>`);
+  const ins=[...box.querySelectorAll('input')];
+  const sum=()=>{const s=ins.reduce((x,i)=>x+(num(i.value)||0),0);box.querySelector('#ws').innerHTML=`Total: <b class="${s===100?'good':'bad'}">${fmt(s)} %</b>`};
+  ins.forEach(i=>i.oninput=sum);sum();
+  box.querySelector('#wok').onclick=()=>{for(const i of ins){const v=num(i.value);if(v!=null&&(isNaN(v)||v<0||v>100)){toast('Los pesos van de 0 a 100');return}}
+    box.querySelectorAll('[data-w]').forEach(i=>{const a=g.acts[i.dataset.w],v=num(i.value);if(a.w!==v)touch(a,{w:v})});
+    const pv=num(box.querySelector('#wp').value);if(pv!==pwv(g,t))setPw(g,t,pv);persist();closeSheet()};
+}
+
+function groupSheet(m){
+  const isNew=!m;const d=m?{...m}:{course:'',name:'',color:COLORS[groups().length%COLORS.length]};
+  const box=sheet(`<h2>${isNew?'Nuevo grupo':'Ajustes del grupo'}</h2>
+  <label class="f" for="gc">Curso</label><input type="text" id="gc" value="${esc(d.course)}" placeholder="1º Bachillerato">
+  <label class="f" for="gn">Materia o grupo</label><input type="text" id="gn" value="${esc(d.name)}" placeholder="Filosofía · Grupo B">
+  <label class="f">Color de la portada</label><div class="sw">${COLORS.map(c=>`<button data-c="${c}" style="background:${c}" class="${c===d.color?'on':''}" aria-label="Color ${c}"></button>`).join('')}</div>
+  <p class="row" style="margin-top:20px"><button class="pri" id="gok">${isNew?'Crear grupo':'Guardar'}</button>${isNew?'':'<button class="ghost danger" id="gdel">Eliminar grupo</button>'}</p>`);
+  box.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{d.color=b.dataset.c;box.querySelectorAll('[data-c]').forEach(x=>x.classList.toggle('on',x===b))});
+  box.querySelector('#gok').onclick=()=>{const course=box.querySelector('#gc').value.trim(),name=box.querySelector('#gn').value.trim();if(!name){toast('Escribe la materia o el nombre del grupo');return}
+    if(isNew){const id=nid();D.groups[id]={course,name,color:d.color,o:now(),u:now()};D.g[id]=newG()}else touch(D.groups[m.id],{course,name,color:d.color});
+    persist();closeSheet()};
+  arm(box.querySelector('#gdel'),()=>{touch(D.groups[m.id],{del:true});persist();$('#sh').hidden=true;location.hash='';render()});
+}
+
+/* ---------- copias entre aparatos ---------- */
+async function saveCopy(){
+  const d=new Date(),p=n=>String(n).padStart(2,'0');
+  const name=`cuaderno-${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}.json`;
+  D.meta.lastExport=now();
+  const blob=new Blob([JSON.stringify(D)],{type:'application/json'});
+  let file=null;try{file=new File([blob],name,{type:'application/json'})}catch(e){}
+  if(file&&navigator.canShare&&navigator.canShare({files:[file]})){
+    try{await navigator.share({files:[file],title:'Copia del cuaderno'});persist(false);toast('Copia enviada');closeSheet();return}catch(e){if(e&&e.name==='AbortError'){D.meta.lastExport=0;return}}
+  }
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  persist(false);toast('Copia descargada: súbela a tu Drive');closeSheet();
+}
+function syncSheet(){
+  const box=sheet(`<h2>Copias entre tablet y ordenador</h2>
+  <p class="note" style="margin-top:0">Última copia guardada desde este aparato: <b>${ago(D.meta.lastExport)}</b>${pending()&&D.meta.lastEdit?' · hay cambios nuevos desde entonces':''}.</p>
+  <h3 style="font-size:16px;margin:18px 0 6px">1. Al terminar en este aparato</h3>
+  <p class="note" style="margin:0 0 10px">Guarda una copia. En la tablet se abre el menú de compartir: elige Google Drive. En el ordenador se descarga el archivo: súbelo a tu Drive.</p>
+  <button class="pri" id="sv">Guardar copia</button>
+  <h3 style="font-size:16px;margin:22px 0 6px">2. Al empezar en el otro aparato</h3>
+  <p class="note" style="margin:0 0 10px">Carga la copia más reciente. No se borra nada: se juntan las notas de los dos aparatos y, si algo se cambió en los dos, se queda lo último que hiciste.</p>
+  <label class="btn" style="display:inline-flex;align-items:center;cursor:pointer">Cargar copia<input type="file" id="fi" accept=".json,application/json" hidden></label>
+  <details class="addbox"><summary>Traer los datos de la versión de Claude</summary><p class="note">En la versión del enlace de Claude, toca «Exportar datos» y «Copiar»; luego pega el texto aquí.</p><textarea id="pt" rows="5"></textarea><p><button class="btn" id="pb">Incorporar</button></p></details>`);
+  box.querySelector('#sv').onclick=saveCopy;
+  box.querySelector('#fi').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{if(importData(r.result))closeSheet()};r.readAsText(f)};
+  box.querySelector('#pb').onclick=()=>{if(importData(box.querySelector('#pt').value))closeSheet()};
+}
+
+/* ---------- arranque ---------- */
+window.addEventListener('hashchange',()=>{$('#sh').hidden=true;const h=location.hash.slice(1);if(h.startsWith('grupo-')){const g=D.g[h.slice(6)];R.tab=g&&stus(g).length?'notas':'alumnos'}render();window.scrollTo(0,0)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet()});
+$('#syncB').onclick=syncSheet;
+D=load();D.meta=D.meta||{};
+try{localStorage.setItem(LS,JSON.stringify(D));status('Guardado ✓')}catch(e){status('Este navegador no deja guardar','err')}
+if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+{const h=location.hash.slice(1),id=h.startsWith('grupo-')&&h.slice(6);if(id&&D.g[id]&&!stus(D.g[id]).length)R.tab='alumnos'}
+render();
+}
+</script>
+</body>
+</html>
